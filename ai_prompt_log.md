@@ -48,3 +48,8 @@
 **AI Suggestion:* Identified that the Wiener filter was creating "Ringing Artifacts" (Gibbs phenomenon) and suggested increasing the balance (K) parameter to suppress high-frequency noise.
 
 **Human Review & Action:** Critical Optimization. Performed a parameter sweep. Discovered that while balance=0.01 produced a sharper image, it created noise that confused the detector. Manually tuned the parameter to 0.05, which recovered 6 objects in the sample image, confirming that visual sharpness must be balanced with semantic clarity for AI models.
+
+## Entry 8: The "Data Starvation" Pivot (Task 4 & 5)
+- **User Intent:** Evaluate the near-zero mAP metrics resulting from the initial YOLOv8 fine-tuning run.
+- **AI Suggestion:** The AI analyzed the training logs and identified "Data Starvation" and "Catastrophic Forgetting." It explained that a 20-image dataset is too small for deep learning convergence and suggested scaling to a 1,200-image "Quality Run." To meet a 30-minute compute budget, the AI provided a script to bypass Google Drive I/O bottlenecks by copying files directly to the Colab local SSD.
+- **Human Review & Action:** I verified the pipeline logic (0 compilation errors) and agreed with the data starvation assessment. I documented the 20-image failure as a necessary "Proof of Concept" and authorized the scale-up script to generate the final, statistically significant metrics for the Task 5 report.

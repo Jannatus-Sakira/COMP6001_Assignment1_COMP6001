@@ -41,3 +41,21 @@ The Observation: Though the modular framework of the Wiener filter and YOLOv8 wa
 The Critical Action: It needed to use a manual intervention to determine the sub-pixel phase shift, and it needed to conduct the parameter sweep of the balance factor.
 
 The Conclusion: The present project indicates that the concept of Automated Coding is merely a beginning rather than an end. The success of engineering relied on determining the location of the AI-generated logic that was dissimilar to the actual reality of the artificial dataset.
+
+=====================================================
+
+After 20-image failure as a deliberate test 
+### In the 1st Phase (Micro Batch Proof of Concept - 20 images)
+
+*we validate the end-to-end training pipeline, an initial fine-tuning run was executed on the 20-image subset for 10 epochs.*
+
+**Micro-Batch Validation Metrics:**
+* **Precision (P):** 0.000096
+* **Recall (R):** 0.0152
+* **Mean Average Precision (mAP50):** 0.00129
+
+**Critical Analysis of Phase 1 Limitations:**
+As anticipated, the near-zero metrics indicate severe *Data Starvation*. Object detection architectures like YOLOv8 require diverse, large-scale data to generalize. With only 20 images and 10 epochs, the model experiences "catastrophic forgetting"—it degrades its pre-trained COCO weights to fit the new data, but lacks the volume to learn the underlying semantic structures of the restored images. Instead, it likely overfits to the specific "ringing" artifacts of those 20 frames.
+
+### Phase 2 Justification: High-Volume Scaling
+To achieve functional detection parity and properly evaluate the advantages of restored imagery, the pipeline must be scaled. The next phase will expand the training set to **1,200 images** over **50 epochs**. To bypass cloud-storage I/O bottlenecks that would otherwise stall training, the dataset will be dynamically transferred to the local volatile NVMe storage of the compute instance prior to execution.
