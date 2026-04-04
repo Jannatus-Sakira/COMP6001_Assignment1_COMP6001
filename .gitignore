@@ -1,0 +1,4 @@
+COMP6001_Dataset/
+.DS_Store
+__pycache__/
+*.zip
