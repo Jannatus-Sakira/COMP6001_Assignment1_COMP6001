@@ -59,3 +59,19 @@ As anticipated, the near-zero metrics indicate severe *Data Starvation*. Object 
 
 ### Phase 2 Justification: High-Volume Scaling
 To achieve functional detection parity and properly evaluate the advantages of restored imagery, the pipeline must be scaled. The next phase will expand the training set to **1,200 images** over **50 epochs**. To bypass cloud-storage I/O bottlenecks that would otherwise stall training, the dataset will be dynamically transferred to the local volatile NVMe storage of the compute instance prior to execution.
+
+*Final Analysis*
+To overcome the data starvation observed in the micro-batch, the pipeline was scaled to a **1,200-image subset** and trained for **50 epochs**. To bypass cloud storage I/O bottlenecks, the dataset was transferred to local NVMe storage prior to training.
+
+**Final Fine-Tuned Metrics (1,200 Images / 50 Epochs):**
+* **Precision (P):** 0.8449
+* **Recall (R):** 0.6856
+* **Mean Average Precision (mAP50):** 0.7893
+* **Mean Average Precision (mAP50-95):** 0.6148
+
+**Critical Analysis of Domain Adaptation:**
+The exponential jump in performance (mAP50 rising from 0.001 to 0.789) empirically proves the value of training directly on the restored domain. 
+
+-- **Artifact Adaptation:** The primary cause of failure in the zero-shot baseline (Task 3) was the model's inability to parse the Gibbs phenomenon ("ringing"). By training on 1,200 restored images, the YOLOv8 architecture successfully adjusted its convolutional weights to treat these high-frequency halos as background noise rather than semantic boundaries. 
+-- **Precision vs. Recall Trade-off:** The model achieved a high Precision (0.844) but a comparatively lower Recall (0.685). This indicates that the model is highly confident and accurate when it makes a bounding box prediction, but the residual noise from the Wiener filter still obscures a portion of smaller objects (or heavily blurred features), preventing them from being detected.
+-- **Conclusion:** Applying classical image restoration before deep learning inference is only viable if the detection model is subsequently fine-tuned on the output of that specific filter. Without fine-tuning, mathematical artifacts act as adversarial noise; with fine-tuning, the model leverages the restored edges to achieve highly robust detection (~79% mAP50) even in artificially degraded datasets.

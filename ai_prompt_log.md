@@ -53,3 +53,8 @@
 - **User Intent:** Evaluate the near-zero mAP metrics resulting from the initial YOLOv8 fine-tuning run.
 - **AI Suggestion:** The AI analyzed the training logs and identified "Data Starvation" and "Catastrophic Forgetting." It explained that a 20-image dataset is too small for deep learning convergence and suggested scaling to a 1,200-image "Quality Run." To meet a 30-minute compute budget, the AI provided a script to bypass Google Drive I/O bottlenecks by copying files directly to the Colab local SSD.
 - **Human Review & Action:** I verified the pipeline logic (0 compilation errors) and agreed with the data starvation assessment. I documented the 20-image failure as a necessary "Proof of Concept" and authorized the scale-up script to generate the final, statistically significant metrics for the Task 5 report.
+
+## Entry 9: YOLOv8 Directory Architecture & Visualizing Metrics
+- **User Intent:** Extract the final statistical curves (Precision-Recall, F1) and visual predictions to fulfill the Task 5 reporting requirements.
+- **AI Suggestion:** The AI initially provided a script pointing to the main training directory. When the files were not found, the AI diagnosed a YOLOv8 architectural quirk (the library automatically routes standalone validation outputs to a separate `/runs/detect/val` directory instead of the project folder) and provided a multi-directory search script.
+- **Human Review & Action:** I executed the updated search script, which successfully located the generated curves. I reviewed the validation batch predictions (`val_batch0_pred.jpg`) to visually confirm the model's performance and used this empirical evidence to write the "Failure Cases" analysis for the final report.
