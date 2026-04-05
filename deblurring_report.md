@@ -75,3 +75,20 @@ The exponential jump in performance (mAP50 rising from 0.001 to 0.789) empirical
 -- **Artifact Adaptation:** The primary cause of failure in the zero-shot baseline (Task 3) was the model's inability to parse the Gibbs phenomenon ("ringing"). By training on 1,200 restored images, the YOLOv8 architecture successfully adjusted its convolutional weights to treat these high-frequency halos as background noise rather than semantic boundaries. 
 -- **Precision vs. Recall Trade-off:** The model achieved a high Precision (0.844) but a comparatively lower Recall (0.685). This indicates that the model is highly confident and accurate when it makes a bounding box prediction, but the residual noise from the Wiener filter still obscures a portion of smaller objects (or heavily blurred features), preventing them from being detected.
 -- **Conclusion:** Applying classical image restoration before deep learning inference is only viable if the detection model is subsequently fine-tuned on the output of that specific filter. Without fine-tuning, mathematical artifacts act as adversarial noise; with fine-tuning, the model leverages the restored edges to achieve highly robust detection (~79% mAP50) even in artificially degraded datasets.
+
+## ---------------------------------------
+
+### Statistical Curves and Visual Analysis (Task 5)
+The fine-tuned model's performance is visually corroborated by the validation outputs (displayed in the final notebook cell). For complete reproducibility and review, all training logs, fine-tuned model weights (`best.pt`), statistical curves, and visual prediction batches have been archived in the included `task4_training_logs` directory.
+
+**Statistical Curves:**
+The Precision-Recall (PR) curve and F1-Confidence curve demonstrate that the model maintains high precision across most confidence thresholds. Compared to the pre-trained zero-shot baseline (which failed entirely on artifact-heavy images), fine-tuning on the restored domain allowed the network to map the Wiener filter's outputs to correct semantic labels, achieving an mAP50 of 0.789.
+
+**Visual Examples and Root Cause Failure Analysis:**
+Qualitative analysis of the validation predictions (`val_batch0_pred.jpg`) reveals that the model successfully detects people, backpacks, and vehicles despite the presence of blur. However, two typical failure cases persist:
+
+1.  **Phantom Edges (False Positives):** The Wiener filter relies on a balance parameter ($K=0.05$). While this suppressed the worst of the Gibbs phenomenon, high-contrast boundaries still produce residual "ringing" (oscillatory halos). The YOLOv8 feature extractor occasionally misinterprets these high-frequency halos as actual boundaries, leading to low-confidence false positive bounding boxes in background areas.
+2.  **Texture Annihilation (False Negatives):** For images subjected to severe linear motion blur, classical restoration cannot mathematically recover lost high-frequency textures without heavily amplifying noise. The filter "smears" these regions. Objects that rely on internal texture for classification lose their defining feature maps, causing the YOLOv8 model to miss them entirely (resulting in a Recall metric of 0.685).
+
+**Final Conclusion:**
+Training directly on classically restored imagery is a highly effective strategy. It forces the neural network to treat mathematical restoration artifacts as expected data distributions rather than adversarial noise. However, to push mAP beyond 80%, future pipelines should replace classical Wiener filtering with Deep Learning-based restoration (e.g., NAFNet) to avoid the Gibbs phenomenon and provide the object detector with naturalistic edges.
